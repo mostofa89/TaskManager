@@ -84,24 +84,35 @@ WSGI_APPLICATION = 'Task_Manager.wsgi.application'
 
 # Prefer DATABASE_URL if provided (Render/Postgres/MySQL). Otherwise fall back to env-based MySQL config.
 DATABASE_URL = config('DATABASE_URL', default=None)
+DB_HOST = config('DB_HOST', default='localhost')
 
 if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600, ssl_require=False),
     }
-else:
+elif DB_HOST and DB_HOST != 'localhost':
+    # External MySQL configuration
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': config('DB_NAME', default='taskmanager'),
             'USER': config('DB_USER', default='root'),
             'PASSWORD': config('DB_PASSWORD', default=''),
-            'HOST': config('DB_HOST', default='localhost'),
+            'HOST': DB_HOST,
             'PORT': config('DB_PORT', default='3306'),
             'OPTIONS': {
                 'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
                 'charset': 'utf8mb4',
             },
+        }
+    }
+else:
+    # Local development or build without database
+    # Use SQLite as fallback to prevent crashes during collectstatic
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
 
