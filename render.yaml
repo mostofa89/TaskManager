@@ -2,15 +2,24 @@ services:
   - type: web
     name: task-manager
     env: python
-    buildCommand: "./build.sh"
-    startCommand: "gunicorn Task_Manager.wsgi:application"
+    buildCommand: "chmod +x build.sh && ./build.sh"
+    startCommand: "gunicorn Task_Manager.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.0
+        value: 3.13.4
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG
         value: False
+      - key: ALLOWED_HOSTS
+        value: .onrender.com
+      - key: CSRF_TRUSTED_ORIGINS
+        value: https://task-manager.onrender.com
+      # Database config - Set these in Render Dashboard
+      # Option 1: Use DATABASE_URL (recommended for Postgres)
+      # - key: DATABASE_URL
+      #   value: your-database-url-here
+      # Option 2: Use individual MySQL env vars
       - key: DB_NAME
         sync: false
       - key: DB_USER
