@@ -1,0 +1,626 @@
+{% extends "base/base.html" %}
+
+{% block title %}Home - Task Manager{% endblock %}
+
+{% block content %}
+
+<!-- ================= HERO SECTION ================= -->
+<section class="relative overflow-hidden pt-24 pb-20 md:pt-32 md:pb-32">
+    <!-- Animated background -->
+    <div class="absolute inset-0 hero-pattern"></div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <!-- Left Content -->
+            <div class="animate-slide-up">
+                <div class="inline-flex items-center space-x-2 bg-primary-100 rounded-full px-4 py-2 mb-8">
+                    <span class="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></span>
+                    <p class="text-sm font-semibold text-primary-700">Your productivity journey starts here</p>
+                </div>
+                
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6">
+                    <span class="gradient-text">Organize</span>
+                    <br>
+                    <span class="text-gray-900">Your Tasks,</span>
+                    <br>
+                    <span class="gradient-text">Master</span>
+                    <span class="text-gray-900"> Your Life</span>
+                </h1>
+                
+                <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                    Create, organize, and track your tasks with beautiful, intuitive interface. Built for individuals and teams who want to get things done efficiently.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                    {% if user.is_authenticated %}
+                    <a href=""
+                        class="px-8 py-4 bg-gradient-to-r from-primary-500 to-accent-500 text-white font-bold rounded-full text-center hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                        View Your Tasks
+                    </a>
+                    {% else %}
+                    <a href="{% url 'user:user-register' %}"
+                        class="px-8 py-4 bg-gradient-to-r from-primary-500 to-accent-500 text-white font-bold rounded-full text-center hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                        Start Free Trial
+                    </a>
+                    <a href="{% url 'user:user-login' %}"
+                        class="px-8 py-4 border-2 border-primary-500 text-primary-600 font-bold rounded-full text-center hover:bg-primary-50 transition-all duration-300">
+                        Sign In
+                    </a>
+                    {% endif %}
+                </div>
+                
+                <!-- Stats -->
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="text-center sm:text-left">
+                        <p class="text-3xl md:text-4xl font-bold text-primary-600">10K+</p>
+                        <p class="text-gray-600 text-sm">Active Users</p>
+                    </div>
+                    <div class="text-center sm:text-left">
+                        <p class="text-3xl md:text-4xl font-bold text-accent-500">99.9%</p>
+                        <p class="text-gray-600 text-sm">Uptime</p>
+                    </div>
+                    <div class="text-center sm:text-left">
+                        <p class="text-3xl md:text-4xl font-bold text-primary-600">24/7</p>
+                        <p class="text-gray-600 text-sm">Support</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Image/Illustration -->
+            <div class="hidden lg:block relative animate-float">
+                <div class="absolute inset-0 bg-gradient-to-tr from-primary-400/20 to-accent-400/20 rounded-3xl blur-2xl"></div>
+                <div class="relative glass rounded-3xl p-8 shadow-2xl">
+                    <div class="space-y-4">
+                        <!-- Task item 1 -->
+                        <div class="flex items-center space-x-4 p-4 bg-white/50 rounded-xl hover-lift">
+                            <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">Complete project proposal</p>
+                                <p class="text-xs text-gray-500">Today at 5:00 PM</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Task item 2 -->
+                        <div class="flex items-center space-x-4 p-4 bg-white/50 rounded-xl hover-lift">
+                            <div class="w-12 h-12 bg-gradient-to-br from-accent-500 to-accent-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">Review team feedback</p>
+                                <p class="text-xs text-gray-500">Tomorrow at 10:00 AM</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Task item 3 -->
+                        <div class="flex items-center space-x-4 p-4 bg-white/50 rounded-xl hover-lift">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">Payment processing</p>
+                                <p class="text-xs text-gray-500">In Progress</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= FEATURES SECTION ================= -->
+<section class="py-20 md:py-32 bg-white relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-primary-100 rounded-full blur-3xl opacity-20"></div>
+    <div class="absolute bottom-0 left-0 w-96 h-96 bg-accent-100 rounded-full blur-3xl opacity-20"></div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Section Header -->
+        <div class="text-center mb-16">
+            <div class="inline-flex items-center space-x-2 bg-primary-100 rounded-full px-4 py-2 mb-4">
+                <span class="w-2 h-2 bg-primary-500 rounded-full"></span>
+                <p class="text-sm font-semibold text-primary-700">Powerful Features</p>
+            </div>
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Everything You Need to <span class="gradient-text">Stay Productive</span>
+            </h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Task Manager comes packed with features to help you organize, prioritize, and track your tasks effortlessly.
+            </p>
+        </div>
+        
+        <!-- Features Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Feature 1 -->
+            <div class="group hover-lift rounded-2xl glass p-8 shadow-lg transition-all duration-300">
+                <div class="w-14 h-14 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Smart Task Management</h3>
+                <p class="text-gray-600">Create, edit, and organize tasks with ease. Mark items complete and track your progress in real-time.</p>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="group hover-lift rounded-2xl glass p-8 shadow-lg transition-all duration-300">
+                <div class="w-14 h-14 bg-gradient-to-br from-accent-500 to-accent-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Priority Labels</h3>
+                <p class="text-gray-600">Tag tasks with priority levels and custom labels. Organize by urgency, type, or project instantly.</p>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="group hover-lift rounded-2xl glass p-8 shadow-lg transition-all duration-300">
+                <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Deadline Reminders</h3>
+                <p class="text-gray-600">Set due dates and receive smart reminders. Never miss an important deadline again.</p>
+            </div>
+            
+            <!-- Feature 4 -->
+            <div class="group hover-lift rounded-2xl glass p-8 shadow-lg transition-all duration-300">
+                <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Customization</h3>
+                <p class="text-gray-600">Personalize your workspace with custom themes, categories, and workflow preferences.</p>
+            </div>
+            
+            <!-- Feature 5 -->
+            <div class="group hover-lift rounded-2xl glass p-8 shadow-lg transition-all duration-300">
+                <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m7-4a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Progress Tracking</h3>
+                <p class="text-gray-600">Visualize your accomplishments with intuitive progress bars and completion statistics.</p>
+            </div>
+            
+            <!-- Feature 6 -->
+            <div class="group hover-lift rounded-2xl glass p-8 shadow-lg transition-all duration-300">
+                <div class="w-14 h-14 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Collaboration</h3>
+                <p class="text-gray-600">Share tasks with team members, assign work, and collaborate seamlessly in real-time.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= HOW IT WORKS SECTION ================= -->
+<section class="py-20 md:py-32 relative overflow-hidden bg-gradient-to-b from-gray-50 to-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Section Header -->
+        <div class="text-center mb-16">
+            <div class="inline-flex items-center space-x-2 bg-primary-100 rounded-full px-4 py-2 mb-4">
+                <span class="w-2 h-2 bg-primary-500 rounded-full"></span>
+                <p class="text-sm font-semibold text-primary-700">Simple Process</p>
+            </div>
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Get Started in <span class="gradient-text">3 Easy Steps</span>
+            </h2>
+        </div>
+        
+        <!-- Steps -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <!-- Step 1 -->
+            <div class="relative">
+                <div class="flex flex-col items-center">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white text-3xl font-bold shadow-xl mb-6">
+                        1
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3 text-center">Sign Up</h3>
+                    <p class="text-gray-600 text-center leading-relaxed">
+                        Create your free account in seconds. No credit card required to get started.
+                    </p>
+                </div>
+                <div class="hidden md:block absolute top-20 left-[65%] w-[120%] h-1 bg-gradient-to-r from-primary-500 to-transparent"></div>
+            </div>
+            
+            <!-- Step 2 -->
+            <div class="relative">
+                <div class="flex flex-col items-center">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-accent-500 to-accent-600 flex items-center justify-center text-white text-3xl font-bold shadow-xl mb-6">
+                        2
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3 text-center">Create Tasks</h3>
+                    <p class="text-gray-600 text-center leading-relaxed">
+                        Add your tasks, set priorities, and organize them by categories.
+                    </p>
+                </div>
+                <div class="hidden md:block absolute top-20 left-[65%] w-[120%] h-1 bg-gradient-to-r from-accent-500 to-transparent"></div>
+            </div>
+            
+            <!-- Step 3 -->
+            <div class="relative">
+                <div class="flex flex-col items-center">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-3xl font-bold shadow-xl mb-6">
+                        3
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3 text-center">Track & Complete</h3>
+                    <p class="text-gray-600 text-center leading-relaxed">
+                        Monitor progress and mark tasks complete as you achieve your goals.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= TESTIMONIALS SECTION ================= -->
+<section class="py-20 md:py-32 bg-white relative overflow-hidden">
+    <div class="absolute inset-0 hero-pattern opacity-50"></div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Section Header -->
+        <div class="text-center mb-16">
+            <div class="inline-flex items-center space-x-2 bg-primary-100 rounded-full px-4 py-2 mb-4">
+                <span class="w-2 h-2 bg-primary-500 rounded-full"></span>
+                <p class="text-sm font-semibold text-primary-700">Testimonials</p>
+            </div>
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Loved by <span class="gradient-text">Thousands</span>
+            </h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                See what users are saying about their experience with Task Manager.
+            </p>
+        </div>
+        
+        <!-- Testimonials Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Testimonial 1 -->
+            <div class="group hover-lift rounded-2xl glass p-8 shadow-lg">
+                <div class="flex items-center space-x-1 mb-4">
+                    {% for i in "12345" %}
+                    <svg class="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                    </svg>
+                    {% endfor %}
+                </div>
+                <p class="text-gray-700 mb-6 leading-relaxed">
+                    "Task Manager has completely transformed how I organize my work. The interface is intuitive and the features are exactly what I needed."
+                </p>
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white font-bold text-lg">
+                        JD
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">John Doe</p>
+                        <p class="text-sm text-gray-500">Product Manager</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Testimonial 2 -->
+            <div class="group hover-lift rounded-2xl glass p-8 shadow-lg">
+                <div class="flex items-center space-x-1 mb-4">
+                    {% for i in "12345" %}
+                    <svg class="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                    </svg>
+                    {% endfor %}
+                </div>
+                <p class="text-gray-700 mb-6 leading-relaxed">
+                    "I've tried many task managers, but this one stands out. The design is beautiful and the collaboration features are top-notch."
+                </p>
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-accent-500 to-blue-500 flex items-center justify-center text-white font-bold text-lg">
+                        SM
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">Sarah Miller</p>
+                        <p class="text-sm text-gray-500">Entrepreneur</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Testimonial 3 -->
+            <div class="group hover-lift rounded-2xl glass p-8 shadow-lg">
+                <div class="flex items-center space-x-1 mb-4">
+                    {% for i in "12345" %}
+                    <svg class="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                    </svg>
+                    {% endfor %}
+                </div>
+                <p class="text-gray-700 mb-6 leading-relaxed">
+                    "Perfect for managing team projects. The deadline reminders and progress tracking keep everyone on the same page. Highly recommended!"
+                </p>
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-lg">
+                        MC
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">Michael Chen</p>
+                        <p class="text-sm text-gray-500">Team Lead</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= PRICING SECTION ================= -->
+<section class="py-20 md:py-32 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-primary-100 rounded-full blur-3xl opacity-20"></div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Section Header -->
+        <div class="text-center mb-16">
+            <div class="inline-flex items-center space-x-2 bg-primary-100 rounded-full px-4 py-2 mb-4">
+                <span class="w-2 h-2 bg-primary-500 rounded-full"></span>
+                <p class="text-sm font-semibold text-primary-700">Pricing</p>
+            </div>
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Simple, Transparent <span class="gradient-text">Pricing</span>
+            </h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Choose the plan that fits your needs. Always flexible to scale up.
+            </p>
+        </div>
+        
+        <!-- Pricing Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <!-- Starter Plan -->
+            <div class="group rounded-2xl glass p-8 shadow-lg hover-lift transition-all">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Starter</h3>
+                <p class="text-gray-600 mb-6">Perfect for individuals</p>
+                <div class="mb-6">
+                    <span class="text-4xl font-bold text-gray-900">$0</span>
+                    <span class="text-gray-600">/month</span>
+                </div>
+                <button
+                    class="w-full px-6 py-3 bg-primary-50 text-primary-600 font-semibold rounded-full hover:bg-primary-100 transition-all mb-8">
+                    Get Started
+                </button>
+                <ul class="space-y-4">
+                    <li class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-gray-700">Up to 50 tasks</span>
+                    </li>
+                    <li class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-gray-700">Basic categories</span>
+                    </li>
+                    <li class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-gray-700">Email support</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Pro Plan -->
+            <div class="group rounded-2xl glass p-8 shadow-lg hover-lift transition-all md:scale-105 border-2 border-primary-500">
+                <div class="inline-block bg-gradient-to-r from-primary-500 to-accent-500 text-white px-4 py-1 rounded-full text-sm font-semibold mb-4">
+                    Most Popular
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Pro</h3>
+                <p class="text-gray-600 mb-6">For serious teams</p>
+                <div class="mb-6">
+                    <span class="text-4xl font-bold text-gray-900">$9</span>
+                    <span class="text-gray-600">/month</span>
+                </div>
+                <button
+                    class="w-full px-6 py-3 bg-gradient-to-r from-primary-500 to-accent-500 text-white font-semibold rounded-full hover:shadow-lg transition-all mb-8">
+                    Start Free Trial
+                </button>
+                <ul class="space-y-4">
+                    <li class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-gray-700">Unlimited tasks</span>
+                    </li>
+                    <li class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-gray-700">Advanced analytics</span>
+                    </li>
+                    <li class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-gray-700">Team collaboration</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Enterprise Plan -->
+            <div class="group rounded-2xl glass p-8 shadow-lg hover-lift transition-all">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
+                <p class="text-gray-600 mb-6">For large organizations</p>
+                <div class="mb-6">
+                    <span class="text-4xl font-bold text-gray-900">Custom</span>
+                </div>
+                <button
+                    class="w-full px-6 py-3 border-2 border-primary-500 text-primary-600 font-semibold rounded-full hover:bg-primary-50 transition-all mb-8">
+                    Contact Sales
+                </button>
+                <ul class="space-y-4">
+                    <li class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-gray-700">Everything in Pro</span>
+                    </li>
+                    <li class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-gray-700">Dedicated support</span>
+                    </li>
+                    <li class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-gray-700">API access</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= CTA SECTION ================= -->
+<section class="py-20 md:py-32 relative overflow-hidden">
+    <div class="absolute inset-0 animated-gradient opacity-80"></div>
+    
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+            Ready to Transform Your Productivity?
+        </h2>
+        <p class="text-xl text-blue-100 mb-12 leading-relaxed">
+            Join thousands of users who are already organizing their tasks and achieving their goals with Task Manager.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            {% if user.is_authenticated %}
+            <a href=""
+                class="px-8 py-4 bg-white text-primary-600 font-bold rounded-full hover:scale-105 hover:shadow-2xl transition-all duration-300">
+                Start Managing Tasks
+            </a>
+            {% else %}
+            <a href=""
+                class="px-8 py-4 bg-white text-primary-600 font-bold rounded-full hover:scale-105 hover:shadow-2xl transition-all duration-300">
+                Get Started Free
+            </a>
+            <a href=""
+                class="px-8 py-4 border-2 border-white text-white font-bold rounded-full hover:bg-white/10 transition-all duration-300">
+                Sign In
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- ================= FAQ SECTION ================= -->
+<section class="py-20 md:py-32 bg-white relative overflow-hidden">
+    <div class="absolute inset-0 hero-pattern opacity-50"></div>
+    
+    <div class="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Section Header -->
+        <div class="text-center mb-16">
+            <div class="inline-flex items-center space-x-2 bg-primary-100 rounded-full px-4 py-2 mb-4">
+                <span class="w-2 h-2 bg-primary-500 rounded-full"></span>
+                <p class="text-sm font-semibold text-primary-700">FAQ</p>
+            </div>
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Frequently Asked <span class="gradient-text">Questions</span>
+            </h2>
+        </div>
+        
+        <!-- FAQ Items -->
+        <div class="space-y-4">
+            <details class="group rounded-xl glass p-6 cursor-pointer transition-all">
+                <summary class="flex items-center justify-between font-semibold text-gray-900">
+                    <span>Is Task Manager free to use?</span>
+                    <svg class="w-5 h-5 text-primary-600 group-open:rotate-180 transition-transform" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                </summary>
+                <p class="text-gray-600 mt-4">
+                    Yes! Task Manager offers a free plan with up to 50 tasks and basic features. Premium plans start at just $9/month for unlimited features.
+                </p>
+            </details>
+
+            <details class="group rounded-xl glass p-6 cursor-pointer transition-all">
+                <summary class="flex items-center justify-between font-semibold text-gray-900">
+                    <span>Can I share tasks with my team?</span>
+                    <svg class="w-5 h-5 text-primary-600 group-open:rotate-180 transition-transform" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                </summary>
+                <p class="text-gray-600 mt-4">
+                    Absolutely! Pro and Enterprise plans include team collaboration features. You can share tasks, assign work, and track progress together in real-time.
+                </p>
+            </details>
+
+            <details class="group rounded-xl glass p-6 cursor-pointer transition-all">
+                <summary class="flex items-center justify-between font-semibold text-gray-900">
+                    <span>Is my data secure?</span>
+                    <svg class="w-5 h-5 text-primary-600 group-open:rotate-180 transition-transform" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                </summary>
+                <p class="text-gray-600 mt-4">
+                    Yes, we take security very seriously. Your data is encrypted, backed up daily, and stored on secure servers. We comply with GDPR and other privacy regulations.
+                </p>
+            </details>
+
+            <details class="group rounded-xl glass p-6 cursor-pointer transition-all">
+                <summary class="flex items-center justify-between font-semibold text-gray-900">
+                    <span>Can I import my existing tasks?</span>
+                    <svg class="w-5 h-5 text-primary-600 group-open:rotate-180 transition-transform" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                </summary>
+                <p class="text-gray-600 mt-4">
+                    Yes! We support importing from most popular task management platforms. You can also manually add tasks or use our CSV import feature.
+                </p>
+            </details>
+
+            <details class="group rounded-xl glass p-6 cursor-pointer transition-all">
+                <summary class="flex items-center justify-between font-semibold text-gray-900">
+                    <span>What's the difference between the plans?</span>
+                    <svg class="w-5 h-5 text-primary-600 group-open:rotate-180 transition-transform" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                </summary>
+                <p class="text-gray-600 mt-4">
+                    The Free plan is perfect for individuals with basic task management. Pro adds unlimited tasks and team collaboration. Enterprise includes dedicated support and API access.
+                </p>
+            </details>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

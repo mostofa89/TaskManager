@@ -1,0 +1,193 @@
+{% extends "base/base.html" %}
+
+{% block title %}Profile - Task Manager{% endblock %}
+
+{% block content %}
+
+<section class="relative min-h-screen pt-28 pb-20 overflow-hidden">
+	<!-- Background decoration -->
+	<div class="absolute inset-0 hero-pattern opacity-40"></div>
+	<div class="absolute top-0 left-0 w-96 h-96 bg-primary-100 rounded-full blur-3xl opacity-20"></div>
+	<div class="absolute bottom-0 right-0 w-96 h-96 bg-accent-100 rounded-full blur-3xl opacity-20"></div>
+
+	<div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+		<!-- Header -->
+		<div class="glass rounded-3xl shadow-2xl p-8 md:p-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6 animate-scale-in">
+			<div class="flex items-center gap-6">
+				<div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-accent-500 text-white font-bold text-2xl flex items-center justify-center shadow-lg">
+					{{ request.user.username|slice:":1"|upper }}
+				</div>
+				<div>
+					<p class="text-sm uppercase tracking-wide text-primary-600 font-semibold">Profile</p>
+					<h1 class="text-3xl md:text-4xl font-bold text-gray-900">Hello, {{ request.user.get_full_name|default:request.user.username }}</h1>
+					<p class="text-gray-600 mt-1">Stay on top of your tasks and account settings.</p>
+				</div>
+			</div>
+			<div class="flex flex-wrap gap-3">
+				{% if request.user.is_staff or request.user.is_superuser %}
+				<a href="{% url 'user:admin-profile' %}" class="px-5 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition flex items-center gap-2">
+					👑 Admin Dashboard
+				</a>
+				{% endif %}
+				<a href="{% url 'home' %}#tasks" class="px-5 py-3 bg-gradient-to-r from-primary-500 to-accent-500 text-white font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition">Go to Tasks</a>
+				<a href="#" class="px-5 py-3 border-2 border-primary-500 text-primary-600 font-semibold rounded-xl hover:bg-primary-50 transition">Edit Profile</a>
+				<a href="{% url 'user:user-logout' %}" class="px-5 py-3 bg-red-500 text-white font-semibold rounded-xl hover:shadow-lg transition">Logout</a>
+			</div>
+		</div>
+
+		<!-- Stats -->
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+			<div class="glass rounded-2xl p-6 shadow-lg hover-lift">
+				<div class="flex items-center justify-between mb-4">
+					<p class="text-sm text-gray-500">Total Tasks</p>
+					<span class="px-3 py-1 text-xs bg-primary-100 text-primary-700 rounded-full">Productivity</span>
+				</div>
+				<p class="text-4xl font-bold text-gray-900">{{ task_count|default:"—" }}</p>
+				<p class="text-gray-500 mt-1">Across all lists</p>
+			</div>
+			<div class="glass rounded-2xl p-6 shadow-lg hover-lift">
+				<div class="flex items-center justify-between mb-4">
+					<p class="text-sm text-gray-500">Completed</p>
+					<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Progress</span>
+				</div>
+				<p class="text-4xl font-bold text-gray-900">{{ completed_count|default:"—" }}</p>
+				<p class="text-gray-500 mt-1">Great job!</p>
+			</div>
+			<div class="glass rounded-2xl p-6 shadow-lg hover-lift">
+				<div class="flex items-center justify-between mb-4">
+					<p class="text-sm text-gray-500">Upcoming</p>
+					<span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">Schedule</span>
+				</div>
+				<p class="text-4xl font-bold text-gray-900">{{ upcoming_count|default:"—" }}</p>
+				<p class="text-gray-500 mt-1">Due soon</p>
+			</div>
+		</div>
+
+		<!-- Main grid -->
+		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+			<!-- Account details -->
+			<div class="lg:col-span-2 glass rounded-3xl shadow-2xl p-8 space-y-6">
+				<div class="flex items-center justify-between">
+					<div>
+						<p class="text-sm text-primary-600 font-semibold">Account</p>
+						<h2 class="text-2xl font-bold text-gray-900">Profile Overview</h2>
+					</div>
+					<a href="#" class="text-primary-600 font-semibold hover:text-primary-700 text-sm">Edit</a>
+				</div>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div class="p-4 rounded-2xl bg-gray-50 border border-gray-100">
+						<p class="text-xs text-gray-500">Full Name</p>
+						<p class="text-lg font-semibold text-gray-900">{{ request.user.get_full_name|default:"—" }}</p>
+					</div>
+					<div class="p-4 rounded-2xl bg-gray-50 border border-gray-100">
+						<p class="text-xs text-gray-500">Username</p>
+						<p class="text-lg font-semibold text-gray-900">{{ request.user.username }}</p>
+					</div>
+					<div class="p-4 rounded-2xl bg-gray-50 border border-gray-100">
+						<p class="text-xs text-gray-500">Email</p>
+						<p class="text-lg font-semibold text-gray-900">{{ request.user.email|default:"—" }}</p>
+					</div>
+					<div class="p-4 rounded-2xl bg-gray-50 border border-gray-100">
+						<p class="text-xs text-gray-500">Member Since</p>
+						<p class="text-lg font-semibold text-gray-900">{{ request.user.date_joined|date:"M d, Y" }}</p>
+					</div>
+					<div class="p-4 rounded-2xl bg-gray-50 border border-gray-100">
+						<p class="text-xs text-gray-500">First Name</p>
+						<p class="text-lg font-semibold text-gray-900">{{ request.user.first_name|default:"—" }}</p>
+					</div>
+					<div class="p-4 rounded-2xl bg-gray-50 border border-gray-100">
+						<p class="text-xs text-gray-500">Last Name</p>
+						<p class="text-lg font-semibold text-gray-900">{{ request.user.last_name|default:"—" }}</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Security & quick actions -->
+			<div class="space-y-6">
+				<div class="glass rounded-3xl shadow-2xl p-6 space-y-4">
+					<div class="flex items-center justify-between">
+						<div>
+							<p class="text-sm text-primary-600 font-semibold">Security</p>
+							<h3 class="text-xl font-bold text-gray-900">Keep your account safe</h3>
+						</div>
+						<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Secure</span>
+					</div>
+					<ul class="space-y-3 text-sm text-gray-700">
+						<li class="flex items-center gap-3">
+							<span class="w-2 h-2 bg-green-500 rounded-full"></span>
+							Strong password enabled
+						</li>
+						<li class="flex items-center gap-3">
+							<span class="w-2 h-2 bg-green-500 rounded-full"></span>
+							Email verified
+						</li>
+						<li class="flex items-center gap-3">
+							<span class="w-2 h-2 bg-yellow-400 rounded-full"></span>
+							Enable 2FA (coming soon)
+						</li>
+					</ul>
+					<div class="flex flex-col gap-3 pt-2">
+						<a href="#" class="w-full text-center px-4 py-3 bg-gradient-to-r from-primary-500 to-accent-500 text-white font-semibold rounded-xl hover:shadow-lg transition">Change Password</a>
+						<a href="{% url 'user:user-logout' %}" class="w-full text-center px-4 py-3 border-2 border-red-500 text-red-600 font-semibold rounded-xl hover:bg-red-50 transition">Logout</a>
+					</div>
+				</div>
+
+				<div class="glass rounded-3xl shadow-2xl p-6 space-y-4">
+					<div class="flex items-center justify-between">
+						<div>
+							<p class="text-sm text-primary-600 font-semibold">Quick Actions</p>
+							<h3 class="text-xl font-bold text-gray-900">What would you like to do?</h3>
+						</div>
+					</div>
+					<div class="grid grid-cols-2 gap-3 text-sm font-semibold text-gray-800">
+						<a href="{% url 'home' %}#tasks" class="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 hover:bg-primary-50 hover:border-primary-200 transition">Create Task</a>
+						<a href="{% url 'home' %}#tasks" class="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 hover:bg-primary-50 hover:border-primary-200 transition">View Tasks</a>
+						<a href="#" class="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 hover:bg-primary-50 hover:border-primary-200 transition">Edit Profile</a>
+						<a href="{% url 'user:user-logout' %}" class="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 hover:bg-red-50 hover:border-red-200 transition text-red-600">Sign Out</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Recent activity -->
+		<div class="glass rounded-3xl shadow-2xl p-8 space-y-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<p class="text-sm text-primary-600 font-semibold">Activity</p>
+					<h2 class="text-2xl font-bold text-gray-900">Recent Highlights</h2>
+				</div>
+				<span class="text-sm text-gray-500">Refreshed just now</span>
+			</div>
+
+			<div class="space-y-4">
+				<div class="flex items-start gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100">
+					<div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 text-white flex items-center justify-center">✓</div>
+					<div>
+						<p class="font-semibold text-gray-900">Completed a task</p>
+						<p class="text-sm text-gray-600">Marked a task as done. Keep up the momentum!</p>
+						<p class="text-xs text-gray-500 mt-1">Just now</p>
+					</div>
+				</div>
+				<div class="flex items-start gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100">
+					<div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center">⏰</div>
+					<div>
+						<p class="font-semibold text-gray-900">Upcoming deadline</p>
+						<p class="text-sm text-gray-600">You have tasks due soon. Review and prioritize.</p>
+						<p class="text-xs text-gray-500 mt-1">Today</p>
+					</div>
+				</div>
+				<div class="flex items-start gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100">
+					<div class="w-10 h-10 rounded-full bg-gradient-to-br from-accent-500 to-pink-600 text-white flex items-center justify-center">⭐</div>
+					<div>
+						<p class="font-semibold text-gray-900">Profile updated</p>
+						<p class="text-sm text-gray-600">Your profile looks great. Keep information current.</p>
+						<p class="text-xs text-gray-500 mt-1">This week</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+{% endblock %}
