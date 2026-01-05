@@ -30,9 +30,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-8098&_$5@x=+o)wfkww-2#tuundi%+@2u%-@$&9m3v*w&4*y-w')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
+# Allow hosts configuration with Render auto-detection
+_allowed_hosts = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
+ALLOWED_HOSTS = list(_allowed_hosts) if _allowed_hosts else ['*']
+
+# Ensure .onrender.com is always allowed in production
+if not DEBUG and '.onrender.com' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('.onrender.com')
 
 
 # Application definition
@@ -164,7 +170,23 @@ LOGIN_URL = '/user/login/'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
-CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='', cast=Csv())
+# CSRF trusted origins with Render auto-detection
+_csrf_origins = config('CSRF_TRUSTED_ORIGINS', default='', cast=Csv())
+CSRF_TRUSTED_ORIGINS = list(_csrf_origins) if _csrf_origins else []
+
+# Auto-add Render domain if in production
+if not DEBUG:
+    for host in ALLOWED_HOSTS:
+        if 'onrender.com' in host or '.onrender.com' == host:
+            if 'https://' + host not in CSRF_TRUSTED_ORIGINS:
+                CSRF_TRUSTED_ORIGINS.append('https://' + host)
+            break
+    # Also add any https origins from allowed hosts
+    for host in ALLOWED_HOSTS:
+        if host not in ['.onrender.com', '*', 'localhost', '127.0.0.1']:
+            https_origin = f'https://{host}' if not host.startswith('https://') else host
+            if https_origin not in CSRF_TRUSTED_ORIGINS:
+                CSRF_TRUSTED_ORIGINS.append(https_origin)
 
 # Default primary key field type
 
