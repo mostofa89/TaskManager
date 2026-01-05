@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: task-manager
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn Task_Manager.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: 3306
