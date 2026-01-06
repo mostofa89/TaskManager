@@ -9,6 +9,7 @@ urlpatterns = [
     path('login/', views.login, name='user-login'),
     path('logout/', views.logout, name='user-logout'),
     path('profile/', views.profile, name='user-profile'),
+    path('forgot-password/', views.forgot_password, name='forgot-password'),
     
     # Admin routes
     path('admin/dashboard/', views.admin_profile, name='admin-profile'),

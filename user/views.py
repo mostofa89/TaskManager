@@ -4,6 +4,9 @@ from django.contrib import messages as message
 from django.contrib.auth import authenticate, logout as auth_logout, login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import PasswordResetCode
 
 # Create your views here.
 def register(request):
@@ -244,3 +247,151 @@ def user_tasks(request, user_id):
         'tasks': tasks,
     }
     return render(request, 'user/user_tasks.html', context)
+
+
+
+def forgot_password(request):
+    """Handle password reset with email verification"""
+    step = request.POST.get('step', 'email') if request.method == 'POST' else 'email'
+    
+    if request.method == 'POST':
+        # Step 1: User enters email
+        if step == 'email':
+            email = request.POST.get('email')
+            try:
+                user = User.objects.get(email=email)
+                
+                # Generate and save reset code
+                reset_code = PasswordResetCode.objects.filter(user=user).first()
+                if not reset_code:
+                    reset_code = PasswordResetCode(user=user)
+                
+                reset_code.code = PasswordResetCode.generate_code()
+                reset_code.is_used = False
+                reset_code.save()
+                
+                # Send email with code
+                subject = 'Password Reset Code - Task Manager'
+                message_body = f"""
+Hello {user.first_name or user.username},
+
+You requested to reset your password. Your reset code is:
+
+{reset_code.code}
+
+This code will expire in 15 minutes.
+
+If you didn't request this, please ignore this email.
+
+Best regards,
+Task Manager Team
+                """
+                
+                send_mail(
+                    subject,
+                    message_body,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [email],
+                    fail_silently=False,
+                )
+                
+                message.success(request, f"Reset code sent to {email}")
+                return render(request, 'user/forget_password.html', {
+                    'step': 'verify',
+                    'email': email
+                })
+                
+            except User.DoesNotExist:
+                # Don't reveal if email exists for security
+                message.info(request, "If this email exists, you'll receive a reset code.")
+                return render(request, 'user/forget_password.html', {'step': 'email'})
+                
+        # Step 2: User verifies code
+        elif step == 'verify':
+            email = request.POST.get('email')
+            reset_code_input = request.POST.get('reset_code')
+            
+            try:
+                user = User.objects.get(email=email)
+                reset_code = PasswordResetCode.objects.get(user=user)
+                
+                # Check if code is valid
+                if reset_code.is_expired():
+                    message.error(request, "Reset code expired. Request a new one.")
+                    return render(request, 'user/forget_password.html', {'step': 'email'})
+                
+                if reset_code.code != reset_code_input:
+                    message.error(request, "Invalid reset code.")
+                    return render(request, 'user/forget_password.html', {
+                        'step': 'verify',
+                        'email': email
+                    })
+                
+                # Code is valid, proceed to password reset
+                message.success(request, "Code verified! Now set your new password.")
+                return render(request, 'user/forget_password.html', {
+                    'step': 'reset',
+                    'email': email
+                })
+                
+            except (User.DoesNotExist, PasswordResetCode.DoesNotExist):
+                message.error(request, "Invalid email or reset code.")
+                return render(request, 'user/forget_password.html', {'step': 'email'})
+        
+        # Step 3: User sets new password
+        elif step == 'reset':
+            email = request.POST.get('email')
+            new_password = request.POST.get('new_password')
+            confirm_password = request.POST.get('confirm_password')
+            
+            # Validate passwords
+            if not new_password or not confirm_password:
+                message.error(request, "Both password fields are required.")
+                return render(request, 'user/forget_password.html', {
+                    'step': 'reset',
+                    'email': email
+                })
+            
+            if new_password != confirm_password:
+                message.error(request, "Passwords do not match.")
+                return render(request, 'user/forget_password.html', {
+                    'step': 'reset',
+                    'email': email
+                })
+            
+            if len(new_password) < 6:
+                message.error(request, "Password must be at least 6 characters long.")
+                return render(request, 'user/forget_password.html', {
+                    'step': 'reset',
+                    'email': email
+                })
+            
+            try:
+                user = User.objects.get(email=email)
+                reset_code = PasswordResetCode.objects.get(user=user)
+                
+                # Check if code is still valid
+                if reset_code.is_expired():
+                    message.error(request, "Reset code expired. Request a new one.")
+                    return render(request, 'user/forget_password.html', {'step': 'email'})
+                
+                if reset_code.is_used:
+                    message.error(request, "This code has already been used.")
+                    return render(request, 'user/forget_password.html', {'step': 'email'})
+                
+                # Update password
+                user.set_password(new_password)
+                user.save()
+                
+                # Mark code as used
+                reset_code.is_used = True
+                reset_code.save()
+                
+                message.success(request, "Password reset successfully! You can now log in.")
+                return redirect('user:user-login')
+                
+            except (User.DoesNotExist, PasswordResetCode.DoesNotExist):
+                message.error(request, "Invalid email or session expired.")
+                return render(request, 'user/forget_password.html', {'step': 'email'})
+    
+    return render(request, 'user/forget_password.html', {'step': 'email'})
