@@ -33,7 +33,7 @@
                 
                 <div class="flex flex-col sm:flex-row gap-4 mb-8">
                     {% if user.is_authenticated %}
-                    <a href=""
+                    <a href="{% url 'tasks:user_tasks' %}"
                         class="px-8 py-4 bg-gradient-to-r from-primary-500 to-accent-500 text-white font-bold rounded-full text-center hover:shadow-2xl hover:scale-105 transition-all duration-300">
                         View Your Tasks
                     </a>
@@ -519,7 +519,7 @@
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
             {% if user.is_authenticated %}
-            <a href=""
+            <a href="{% url 'tasks:create' %}"
                 class="px-8 py-4 bg-white text-primary-600 font-bold rounded-full hover:scale-105 hover:shadow-2xl transition-all duration-300">
                 Start Managing Tasks
             </a>

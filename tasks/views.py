@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .models import Task
 from django.contrib import messages as message
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 # Create your views here.
 
 @login_required(login_url='user:user-login')
@@ -38,7 +39,7 @@ def createTask(request):
 
 
 @login_required(login_url='user:user-login')
-def tasks(request):
+def my_tasks(request):
     user_tasks = Task.objects.filter(user=request.user).order_by('-created_at')
     context = {
         'tasks': user_tasks,

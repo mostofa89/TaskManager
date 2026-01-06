@@ -4,6 +4,7 @@ from django.contrib import messages as message
 from django.contrib.auth import authenticate, logout as auth_logout, login as auth_login, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect as django_redirect
 from django.http import HttpResponseForbidden
 from django.core.mail import send_mail
 from django.conf import settings
@@ -11,25 +12,41 @@ from .models import PasswordResetCode
 
 # Create your views here.
 def register(request):
+    if request.user.is_authenticated:
+        return django_redirect('home')
+    form_values = {
+        'first_name': '',
+        'last_name': '',
+        'username': '',
+        'email': '',
+    }
+
     if request.method == 'POST':
-        fname = request.POST.get('first_name')
-        lname = request.POST.get('last_name')
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password1 = request.POST.get('password1')
-        password2 = request.POST.get('password2')
+        fname = request.POST.get('first_name', '').strip()
+        lname = request.POST.get('last_name', '').strip()
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        password1 = request.POST.get('password1', '')
+        password2 = request.POST.get('password2', '')
+
+        form_values.update({
+            'first_name': fname,
+            'last_name': lname,
+            'username': username,
+            'email': email,
+        })
 
         if password1 != password2:
             message.error(request, "Passwords do not match.")
-            return redirect('user:user-register')
+            return render(request, 'user/register.html', {'form_values': form_values})
 
         elif User.objects.filter(username=username).exists():
             message.error(request, "Username already taken.")
-            return redirect('user:user-register')
+            return render(request, 'user/register.html', {'form_values': form_values})
 
         elif User.objects.filter(email=email).exists():
             message.error(request, "Email already registered.")
-            return redirect('user:user-register')
+            return render(request, 'user/register.html', {'form_values': form_values})
         else:
             user = User.objects.create_user(
                 username=username,
@@ -42,11 +59,71 @@ def register(request):
             message.success(request, "Registration successful. You can now log in.")
             return redirect('user:user-login')
 
+    return render(request, 'user/register.html', {'form_values': form_values})
 
-    return render(request, 'user/register.html')
+
+@login_required(login_url='user:user-login')
+def edit_profile(request):
+    user = get_object_or_404(User, id=request.user.id)
+
+    form_values = {
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'username': user.username,
+        'email': user.email,
+    }
+
+    if request.method == 'POST':
+        fname = request.POST.get('first_name', '').strip()
+        lname = request.POST.get('last_name', '').strip()
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        password1 = request.POST.get('password1', '')
+        password2 = request.POST.get('password2', '')
+
+        form_values.update({
+            'first_name': fname,
+            'last_name': lname,
+            'username': username,
+            'email': email,
+        })
+
+        # Validate uniqueness excluding current user
+        if password1 or password2:
+            if password1 != password2:
+                message.error(request, "Passwords do not match.")
+                return render(request, 'user/register.html', {'is_edit': True, 'form_values': form_values})
+        if User.objects.filter(username=username).exclude(id=user.id).exists():
+            message.error(request, "Username already taken.")
+            return render(request, 'user/register.html', {'is_edit': True, 'form_values': form_values})
+
+        if User.objects.filter(email=email).exclude(id=user.id).exists():
+            message.error(request, "Email already registered.")
+            return render(request, 'user/register.html', {'is_edit': True, 'form_values': form_values})
+
+        user.first_name = fname
+        user.last_name = lname
+        user.username = username
+        user.email = email
+
+        if password1 and password1 == password2:
+            user.set_password(password1)
+            user.save()
+            # keep user logged in after password change
+            update_session_auth_hash(request, user)
+        else:
+            user.save()
+
+        message.success(request, "Profile updated successfully.")
+        return redirect('user:user-profile')
+
+    return render(request, 'user/register.html', {'is_edit': True, 'form_values': form_values, 'user_obj': user})
+
 
 
 def login(request):
+    if request.user.is_authenticated:
+        return django_redirect('home')
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')

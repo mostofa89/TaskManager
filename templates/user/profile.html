@@ -14,8 +14,15 @@
 		<!-- Header -->
 		<div class="glass rounded-3xl shadow-2xl p-8 md:p-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6 animate-scale-in">
 			<div class="flex items-center gap-6">
-				<div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-accent-500 text-white font-bold text-2xl flex items-center justify-center shadow-lg">
-					{{ request.user.username|slice:":1"|upper }}
+				<div class="relative">
+					<div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-accent-500 text-white font-bold text-2xl flex items-center justify-center shadow-lg">
+						{{ request.user.username|slice:":1"|upper }}
+					</div>
+					<span class="absolute -top-1 -right-1 inline-flex items-center justify-center w-6 h-6 rounded-full bg-white text-primary-600 shadow-md">
+						<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M5.5 8.5A4.5 4.5 0 1114.5 8.5 4.5 4.5 0 015.5 8.5zM4 20.5a6.5 6.5 0 0113 0" />
+						</svg>
+					</span>
 				</div>
 				<div>
 					<p class="text-sm uppercase tracking-wide text-primary-600 font-semibold">Profile</p>
@@ -26,17 +33,30 @@
 			<div class="flex flex-wrap gap-3">
 				{% if request.user.is_staff or request.user.is_superuser %}
 				<a href="{% url 'user:admin-profile' %}" class="px-5 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition flex items-center gap-2">
-					👑 Admin Dashboard
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M4 8l4-2 4 2 4-2 4 2v8l-4 2-4-2-4 2-4-2V8z" />
+					</svg>
+					Admin Dashboard
 				</a>
 				{% endif %}
-				<a href="{% url 'home' %}#tasks" class="px-5 py-3 bg-gradient-to-r from-primary-500 to-accent-500 text-white font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition">Go to Tasks</a>
-				<a href="#" class="px-5 py-3 border-2 border-primary-500 text-primary-600 font-semibold rounded-xl hover:bg-primary-50 transition">Edit Profile</a>
+				<a href="{% url 'tasks:user_tasks' %}#tasks" class="px-5 py-3 bg-gradient-to-r from-primary-500 to-accent-500 text-white font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition inline-flex items-center gap-2">
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18" />
+					</svg>
+					Go to Tasks
+				</a>
+				<a href="{% url 'user:edit_profile' %}" class="px-5 py-3 border-2 border-primary-500 text-primary-600 font-semibold rounded-xl hover:bg-primary-50 transition inline-flex items-center gap-2">
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-9.193 9.193l9.193-9.193-3.536-3.536-9.193 9.193L5 19l1.768-.768z" />
+					</svg>
+					Edit Profile
+				</a>
 			</div>
 		</div>
 
 		<!-- Stats -->
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-			<div class="glass rounded-2xl p-6 shadow-lg hover-lift">
+			<div class="glass rounded-2xl p-6 shadow-lg hover-lift border border-primary-50">
 				<div class="flex items-center justify-between mb-4">
 					<p class="text-sm text-gray-500">Total Tasks</p>
 					<span class="px-3 py-1 text-xs bg-primary-100 text-primary-700 rounded-full">Productivity</span>
@@ -44,7 +64,7 @@
 				<p class="text-4xl font-bold text-gray-900">{{ task_count|default:"—" }}</p>
 				<p class="text-gray-500 mt-1">Across all lists</p>
 			</div>
-			<div class="glass rounded-2xl p-6 shadow-lg hover-lift">
+			<div class="glass rounded-2xl p-6 shadow-lg hover-lift border border-green-50">
 				<div class="flex items-center justify-between mb-4">
 					<p class="text-sm text-gray-500">Completed</p>
 					<span class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full">Progress</span>
@@ -52,7 +72,7 @@
 				<p class="text-4xl font-bold text-gray-900">{{ completed_count|default:"—" }}</p>
 				<p class="text-gray-500 mt-1">Great job!</p>
 			</div>
-			<div class="glass rounded-2xl p-6 shadow-lg hover-lift">
+			<div class="glass rounded-2xl p-6 shadow-lg hover-lift border border-blue-50">
 				<div class="flex items-center justify-between mb-4">
 					<p class="text-sm text-gray-500">Upcoming</p>
 					<span class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">Schedule</span>
@@ -71,7 +91,12 @@
 						<p class="text-sm text-primary-600 font-semibold">Account</p>
 						<h2 class="text-2xl font-bold text-gray-900">Profile Overview</h2>
 					</div>
-					<a href="#" class="text-primary-600 font-semibold hover:text-primary-700 text-sm">Edit</a>
+					<a href="{% url 'user:edit_profile' %}" class="text-primary-600 font-semibold hover:text-primary-700 text-sm inline-flex items-center gap-1">
+						<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 113.182 3.182L7.125 19.587 3 21l1.413-4.125 12.449-13.388z" />
+						</svg>
+						Edit
+					</a>
 				</div>
 
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -127,8 +152,18 @@
 						</li>
 					</ul>
 					<div class="flex flex-col gap-3 pt-2">
-						<a href="{% url 'user:change-password' %}" class="w-full text-center px-4 py-3 bg-gradient-to-r from-primary-500 to-accent-500 text-white font-semibold rounded-xl hover:shadow-lg transition">Change Password</a>
-						<a href="{% url 'user:user-logout' %}" class="w-full text-center px-4 py-3 border-2 border-red-500 text-red-600 font-semibold rounded-xl hover:bg-red-50 transition">Logout</a>
+						<a href="{% url 'user:change-password' %}" class="w-full text-center px-4 py-3 bg-gradient-to-r from-primary-500 to-accent-500 text-white font-semibold rounded-xl hover:shadow-lg transition inline-flex items-center justify-center gap-2">
+							<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M12 15v3m-3-3h6m-2.4-8.4L6 11.4V18a2 2 0 002 2h8a2 2 0 002-2v-6.6l-6.6-4.8a1 1 0 00-1.2 0z" />
+							</svg>
+							Change Password
+						</a>
+						<a href="{% url 'user:user-logout' %}" class="w-full text-center px-4 py-3 border-2 border-red-500 text-red-600 font-semibold rounded-xl hover:bg-red-50 transition inline-flex items-center justify-center gap-2">
+							<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M15 12H3m6-6l-6 6 6 6m6-12h3a2 2 0 012 2v8a2 2 0 01-2 2h-3" />
+							</svg>
+							Logout
+						</a>
 					</div>
 				</div>
 
@@ -140,10 +175,30 @@
 						</div>
 					</div>
 					<div class="grid grid-cols-2 gap-3 text-sm font-semibold text-gray-800">
-						<a href="{% url 'home' %}#tasks" class="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 hover:bg-primary-50 hover:border-primary-200 transition">Create Task</a>
-						<a href="{% url 'home' %}#tasks" class="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 hover:bg-primary-50 hover:border-primary-200 transition">View Tasks</a>
-						<a href="#" class="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 hover:bg-primary-50 hover:border-primary-200 transition">Edit Profile</a>
-						<a href="{% url 'user:user-dashboard' %}" class="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 hover:bg-primary-50 hover:border-primary-200 transition">Dashboard</a>
+						<a href="{% url 'tasks:create' %}#tasks" class="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 hover:bg-primary-50 hover:border-primary-200 transition inline-flex items-center gap-2">
+							<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-6-6h12" />
+							</svg>
+							Create Task
+						</a>
+						<a href="{% url 'tasks:user_tasks' %}#tasks" class="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 hover:bg-primary-50 hover:border-primary-200 transition inline-flex items-center gap-2">
+							<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h10" />
+							</svg>
+							View Tasks
+						</a>
+						<a href="{% url 'user:edit_profile' %}" class="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 hover:bg-primary-50 hover:border-primary-200 transition inline-flex items-center gap-2">
+							<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-9.193 9.193l9.193-9.193-3.536-3.536-9.193 9.193L5 19l1.768-.768z" />
+							</svg>
+							Edit Profile
+						</a>
+						<a href="{% url 'user:user-dashboard' %}" class="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 hover:bg-primary-50 hover:border-primary-200 transition inline-flex items-center gap-2">
+							<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+							</svg>
+							Dashboard
+						</a>
 					</div>
 				</div>
 			</div>
@@ -161,7 +216,11 @@
 
 			<div class="space-y-4">
 				<div class="flex items-start gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100">
-					<div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 text-white flex items-center justify-center">✓</div>
+					<div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 text-white flex items-center justify-center">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+						</svg>
+					</div>
 					<div>
 						<p class="font-semibold text-gray-900">Completed a task</p>
 						<p class="text-sm text-gray-600">Marked a task as done. Keep up the momentum!</p>
@@ -169,7 +228,11 @@
 					</div>
 				</div>
 				<div class="flex items-start gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100">
-					<div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center">⏰</div>
+					<div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l3 3" />
+						</svg>
+					</div>
 					<div>
 						<p class="font-semibold text-gray-900">Upcoming deadline</p>
 						<p class="text-sm text-gray-600">You have tasks due soon. Review and prioritize.</p>
@@ -177,7 +240,11 @@
 					</div>
 				</div>
 				<div class="flex items-start gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100">
-					<div class="w-10 h-10 rounded-full bg-gradient-to-br from-accent-500 to-pink-600 text-white flex items-center justify-center">⭐</div>
+					<div class="w-10 h-10 rounded-full bg-gradient-to-br from-accent-500 to-pink-600 text-white flex items-center justify-center">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M12 17l-5 3 1.5-5.5L4 9l5.5-.4L12 3l2.5 5.6 5.5.4-4.5 5.5L17 20z" />
+						</svg>
+					</div>
 					<div>
 						<p class="font-semibold text-gray-900">Profile updated</p>
 						<p class="text-sm text-gray-600">Your profile looks great. Keep information current.</p>

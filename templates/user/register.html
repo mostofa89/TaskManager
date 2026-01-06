@@ -49,6 +49,7 @@
                             name="first_name" 
                             id="id_first_name"
                             placeholder="John"
+                            value="{{ form_values.first_name|default_if_none:'' }}"
                             class="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border-2 border-gray-200 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:bg-white transition-all duration-300"
                             required
                         >
@@ -71,6 +72,7 @@
                             name="last_name" 
                             id="id_last_name"
                             placeholder="Doe"
+                            value="{{ form_values.last_name|default_if_none:'' }}"
                             class="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border-2 border-gray-200 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:bg-white transition-all duration-300"
                             required
                         >
@@ -93,6 +95,7 @@
                             name="email" 
                             id="id_email"
                             placeholder="john@example.com"
+                            value="{{ form_values.email|default_if_none:'' }}"
                             class="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border-2 border-gray-200 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:bg-white transition-all duration-300"
                             required
                         >
@@ -123,6 +126,7 @@
                             name="username" 
                             id="id_username"
                             placeholder="johndoe"
+                            value="{{ form_values.username|default_if_none:'' }}"
                             class="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border-2 border-gray-200 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:bg-white transition-all duration-300"
                             required
                         >
@@ -221,13 +225,14 @@
                     type="submit"
                     class="w-full py-3 bg-gradient-to-r from-primary-500 to-accent-500 text-white font-bold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-2 mt-8"
                 >
-                    <span>Create Account</span>
+                    <span>{% if is_edit %}Save Changes{% else %}Create Account{% endif %}</span>
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                 </button>
                 
                 <!-- Divider -->
+                {% if not is_edit %}
                 <div class="relative my-6">
                     <div class="absolute inset-0 flex items-center">
                         <div class="w-full border-t border-gray-200"></div>
@@ -239,11 +244,12 @@
                 
                 <!-- Sign In Link -->
                 <a 
-                    href=""
+                    href="{% url 'user:user-login' %}"
                     class="w-full py-3 border-2 border-primary-500 text-primary-600 font-bold rounded-xl hover:bg-primary-50 transition-all duration-300 flex items-center justify-center"
                 >
                     Sign In Instead
                 </a>
+                {% endif %}
             </form>
             
             <!-- Form Errors Display -->
