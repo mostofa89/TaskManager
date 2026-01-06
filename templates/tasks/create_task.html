@@ -1,0 +1,182 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <!-- Header -->
+    <div class="glass rounded-2xl shadow-xl p-8 mb-8 animate-slide-up">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <p class="text-sm font-semibold text-primary-600 uppercase tracking-wide">{% if is_edit %}Update Task{% else %}New Task{% endif %}</p>
+                <h1 class="text-3xl sm:text-4xl font-bold gradient-text">{% if is_edit %}Edit Task{% else %}Create a Task{% endif %}</h1>
+                <p class="text-gray-600 mt-2">{% if is_edit %}Modify your task details and save changes{% else %}Add a new task to stay organized and productive{% endif %}</p>
+            </div>
+            <div class="text-5xl animate-float">📝</div>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="glass rounded-2xl shadow-2xl p-8 animate-slide-up">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Task Title -->
+            <div class="space-y-2">
+                <label for="title" class="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                    Task Title <span class="text-red-500">*</span>
+                </label>
+                <input type="text" name="title" id="title" required value="{% if task %}{{ task.title }}{% endif %}"
+                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition placeholder-gray-400" 
+                    placeholder="e.g., Complete project documentation">
+                {% if form.title.errors %}
+                    <p class="text-sm text-red-600">{{ form.title.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Description -->
+            <div class="space-y-2">
+                <label for="description" class="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                    Description
+                </label>
+                <textarea name="description" id="description" rows="5"
+                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition placeholder-gray-400 resize-none" 
+                    placeholder="Add details about your task...">{% if task %}{{ task.description }}{% endif %}</textarea>
+                {% if form.description.errors %}
+                    <p class="text-sm text-red-600">{{ form.description.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Priority and Due Date Row -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Priority -->
+                <div class="space-y-2">
+                    <label for="priority" class="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                        Priority
+                    </label>
+                    <select name="priority" id="priority"
+                        class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition">
+                        <option value="">Select priority</option>
+                        <option value="low" {% if task and task.priority == 'low' %}selected{% endif %}>🟢 Low</option>
+                        <option value="medium" {% if task and task.priority == 'medium' %}selected{% endif %}>🟡 Medium</option>
+                        <option value="high" {% if task and task.priority == 'high' %}selected{% endif %}>🔴 High</option>
+                    </select>
+                    {% if form.priority.errors %}
+                        <p class="text-sm text-red-600">{{ form.priority.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Due Date -->
+                <div class="space-y-2">
+                    <label for="due_date" class="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                        Due Date
+                    </label>
+                    <input type="date" name="due_date" id="due_date" value="{% if task and task.due_date %}{{ task.due_date|date:'Y-m-d' }}{% endif %}"
+                        class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition">
+                    {% if form.due_date.errors %}
+                        <p class="text-sm text-red-600">{{ form.due_date.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Status and Category Row -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Status -->
+                <div class="space-y-2">
+                    <label for="status" class="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                        Status
+                    </label>
+                    <select name="status" id="status"
+                        class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition">
+                        <option value="todo" {% if task and task.status == 'todo' %}selected{% endif %}>📋 To Do</option>
+                        <option value="in_progress" {% if task and task.status == 'in_progress' %}selected{% endif %}>⏳ In Progress</option>
+                        <option value="completed" {% if task and task.status == 'completed' %}selected{% endif %}>✅ Completed</option>
+                    </select>
+                    {% if form.status.errors %}
+                        <p class="text-sm text-red-600">{{ form.status.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Category -->
+                <div class="space-y-2">
+                    <label for="category" class="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                        Category
+                    </label>
+                    <input type="text" name="category" id="category" value="{% if task %}{{ task.category }}{% endif %}"
+                        class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition placeholder-gray-400" 
+                        placeholder="e.g., Work, Personal, Study">
+                    {% if form.category.errors %}
+                        <p class="text-sm text-red-600">{{ form.category.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Completed Checkbox -->
+            <div class="flex items-center gap-3 p-4 bg-gradient-to-r from-primary-50 to-accent-50 rounded-xl">
+                <input type="checkbox" name="is_completed" id="completed" {% if task and task.is_completed %}checked{% endif %}
+                    class="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer">
+                <label for="completed" class="text-sm font-medium text-gray-900 cursor-pointer select-none">
+                    Mark this task as completed
+                </label>
+            </div>
+
+            <!-- Tips Section -->
+            <div class="glass rounded-xl border border-blue-100 bg-blue-50 px-4 py-4 text-sm text-gray-700">
+                <div class="flex items-start gap-3">
+                    <span class="text-lg">💡</span>
+                    <div class="space-y-1">
+                        <p class="font-semibold text-gray-900">Quick Tips:</p>
+                        <ul class="list-disc list-inside space-y-1 text-gray-700">
+                            <li>Use clear, action-oriented titles (e.g., "Review budget report")</li>
+                            <li>Set realistic due dates to maintain momentum</li>
+                            <li>Break large tasks into smaller, manageable subtasks</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t border-gray-200">
+                <a href="{% url 'tasks:user_tasks' %}" class="inline-flex items-center gap-2 text-gray-600 hover:text-primary-600 font-semibold transition-colors">
+                    ← Cancel
+                </a>
+                <div class="flex gap-3">
+                    <button type="reset" class="px-6 py-3 rounded-full border-2 border-gray-300 text-gray-700 font-semibold hover:border-gray-400 hover:bg-gray-50 transition-all">
+                        🔄 Reset
+                    </button>
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full bg-gradient-to-r from-primary-500 to-accent-500 text-white font-semibold shadow-lg hover:scale-105 hover:shadow-xl transition-all">
+                        {% if is_edit %}💾 Save Changes{% else %}➕ Create Task{% endif %}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Additional Info Card -->
+    <div class="glass rounded-2xl shadow-xl p-6 mt-8 animate-slide-up">
+        <div class="flex items-start gap-4">
+            <div class="text-3xl">🎯</div>
+            <div>
+                <h3 class="font-bold text-gray-900 mb-2">Task Management Best Practices</h3>
+                <div class="text-sm text-gray-600 space-y-2">
+                    <p>📌 <strong>Prioritize:</strong> Focus on high-priority tasks first</p>
+                    <p>⏰ <strong>Time-box:</strong> Allocate specific time slots for tasks</p>
+                    <p>✨ <strong>Review:</strong> Regularly update task status and progress</p>
+                    <p>🎉 <strong>Celebrate:</strong> Acknowledge completed tasks to stay motivated</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Set minimum date to today
+    document.addEventListener('DOMContentLoaded', function() {
+        const dueDateInput = document.getElementById('due_date');
+        if (dueDateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dueDateInput.setAttribute('min', today);
+        }
+    });
+</script>
+
+{% endblock %}
