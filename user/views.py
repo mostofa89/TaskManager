@@ -1,7 +1,8 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib import messages as message
-from django.contrib.auth import authenticate, logout as auth_logout, login as auth_login
+from django.contrib.auth import authenticate, logout as auth_logout, login as auth_login, update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.core.mail import send_mail
@@ -395,3 +396,26 @@ Task Manager Team
                 return render(request, 'user/forget_password.html', {'step': 'email'})
     
     return render(request, 'user/forget_password.html', {'step': 'email'})
+
+
+def dashboard(request):
+    return render(request, 'user/dashboard.html')
+
+
+@login_required(login_url='user:user-login')
+def change_password(request):
+    """Change password using Django's built-in PasswordChangeForm for validation."""
+    if request.method == 'POST':
+        form = PasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # keep user logged in after password change
+            message.success(request, "Password changed successfully.")
+            return redirect('user:user-profile')
+        else:
+            # Form errors will be rendered in the template
+            message.error(request, "Please correct the errors below.")
+    else:
+        form = PasswordChangeForm(user=request.user)
+
+    return render(request, 'user/change_password.html', {'form': form})

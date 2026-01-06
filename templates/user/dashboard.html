@@ -1,0 +1,236 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header Section -->
+    <div class="mb-8 animate-slide-up">
+        <div class="glass rounded-2xl shadow-xl p-8 hover-lift">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                <div>
+                    <h1 class="text-4xl font-bold gradient-text mb-2">Welcome back, {{ user.username }}! 👋</h1>
+                    <p class="text-gray-600">Here's your task overview and statistics</p>
+                </div>
+                <a href="#" class="px-8 py-3.5 bg-gradient-to-r from-primary-500 to-accent-500 text-white font-semibold rounded-full hover:shadow-xl hover:scale-105 transition-all duration-300 inline-flex items-center gap-2 w-fit">
+                    ➕ New Task
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Tasks -->
+        <div class="glass rounded-2xl shadow-xl p-6 hover-lift group">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-50 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                    📋
+                </div>
+                <div>
+                    <p class="text-gray-600 text-sm font-medium uppercase tracking-wide">Total Tasks</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ total_tasks|default:"0" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completed Tasks -->
+        <div class="glass rounded-2xl shadow-xl p-6 hover-lift group">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-100 to-green-50 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                    ✅
+                </div>
+                <div>
+                    <p class="text-gray-600 text-sm font-medium uppercase tracking-wide">Completed</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ completed_tasks|default:"0" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- In Progress -->
+        <div class="glass rounded-2xl shadow-xl p-6 hover-lift group">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                    ⏳
+                </div>
+                <div>
+                    <p class="text-gray-600 text-sm font-medium uppercase tracking-wide">In Progress</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ pending_tasks|default:"0" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overdue -->
+        <div class="glass rounded-2xl shadow-xl p-6 hover-lift group">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 bg-gradient-to-br from-red-100 to-red-50 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                    🔴
+                </div>
+                <div>
+                    <p class="text-gray-600 text-sm font-medium uppercase tracking-wide">Overdue</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ overdue_tasks|default:"0" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Tasks Section (Left - 2 columns) -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Tasks Header with Filter Tabs -->
+            <div class="glass rounded-2xl shadow-xl p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Your Tasks</h2>
+                    <div class="flex gap-2">
+                        <a href="?filter=all" class="px-4 py-2 rounded-lg font-semibold transition-all duration-300 {% if filter == 'all' or not filter %}bg-gradient-to-r from-primary-500 to-accent-500 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                            All
+                        </a>
+                        <a href="?filter=pending" class="px-4 py-2 rounded-lg font-semibold transition-all duration-300 {% if filter == 'pending' %}bg-gradient-to-r from-primary-500 to-accent-500 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                            Pending
+                        </a>
+                        <a href="?filter=completed" class="px-4 py-2 rounded-lg font-semibold transition-all duration-300 {% if filter == 'completed' %}bg-gradient-to-r from-primary-500 to-accent-500 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                            Completed
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tasks List -->
+                {% if tasks %}
+                    <div class="space-y-3">
+                        {% for task in tasks %}
+                            <div class="flex items-start gap-4 p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl hover:from-blue-50 hover:to-primary-50 transition-all duration-300 group border-l-4 {% if task.completed %}border-green-500 bg-gradient-to-r from-green-50 to-emerald-50{% else %}border-primary-500{% endif %}">
+                                <!-- Checkbox -->
+                                <div class="pt-1">
+                                    <form method="post" action="#" class="inline">
+                                        {% csrf_token %}
+                                        <input type="checkbox" class="w-5 h-5 accent-primary-500 cursor-pointer {% if task.completed %}ring-2 ring-green-400{% endif %}" {% if task.completed %}checked{% endif %}>
+                                    </form>
+                                </div>
+
+                                <!-- Task Details -->
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors {% if task.completed %}line-through text-gray-500{% endif %}">
+                                        {{ task.title|default:"Untitled Task" }}
+                                    </h3>
+                                    {% if task.description %}
+                                        <p class="text-sm text-gray-600 mt-1">{{ task.description|truncatewords:20 }}</p>
+                                    {% endif %}
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        {% if task.due_date %}
+                                            <span class="inline-flex items-center gap-1 text-xs bg-white px-2.5 py-1 rounded-full text-gray-700">
+                                                📅 {{ task.due_date|date:"M d, Y" }}
+                                            </span>
+                                        {% endif %}
+                                        {% if task.priority %}
+                                            <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full {% if task.priority == 'high' %}bg-red-100 text-red-700{% elif task.priority == 'medium' %}bg-yellow-100 text-yellow-700{% else %}bg-green-100 text-green-700{% endif %}">
+                                                {{ task.get_priority_display|default:task.priority }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button class="p-2 hover:bg-white rounded-lg transition-colors" title="View">
+                                        👁️
+                                    </button>
+                                    <button class="p-2 hover:bg-white rounded-lg transition-colors" title="Edit">
+                                        ✏️
+                                    </button>
+                                    <button class="p-2 hover:bg-red-100 text-red-600 rounded-lg transition-colors" title="Delete">
+                                        🗑️
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <!-- Empty State -->
+                    <div class="text-center py-12">
+                        <div class="text-6xl mb-4">📝</div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">No tasks yet</h3>
+                        <p class="text-gray-600 mb-6">Create your first task to get started and stay organized</p>
+                        <a href="#" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-accent-500 text-white font-semibold rounded-full hover:shadow-lg transition-all">
+                            ➕ Create Your First Task
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar (Right - 1 column) -->
+        <div class="space-y-6">
+            <!-- Profile Card -->
+            <div class="glass rounded-2xl shadow-xl p-6 hover-lift">
+                <div class="flex items-center gap-4 mb-6 pb-6 border-b border-gray-200">
+                    <div class="w-14 h-14 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                        {{ user.username|slice:":1"|upper }}
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900">{{ user.get_full_name|default:user.username }}</h3>
+                        <p class="text-sm text-gray-600">{{ user.email }}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-6 pb-6 border-b border-gray-200">
+                    <div class="text-center">
+                        <p class="text-xs text-gray-600 uppercase font-semibold mb-1">Member Since</p>
+                        <p class="text-lg font-bold gradient-text">{{ user.date_joined|date:"M Y" }}</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xs text-gray-600 uppercase font-semibold mb-1">Completion Rate</p>
+                        <p class="text-lg font-bold gradient-text">
+                            {% if total_tasks > 0 %}{{ completion_rate|default:"0" }}%{% else %}—{% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <a href="{% url 'user:user-profile' %}" class="block w-full py-2.5 bg-gradient-to-r from-primary-50 to-accent-50 hover:from-primary-100 hover:to-accent-100 text-gray-900 font-semibold rounded-lg transition-all text-center">
+                        👤 View Profile
+                    </a>
+                    <a href="#" class="block w-full py-2.5 bg-gradient-to-r from-primary-50 to-accent-50 hover:from-primary-100 hover:to-accent-100 text-gray-900 font-semibold rounded-lg transition-all text-center">
+                        ⚙️ Settings
+                    </a>
+                </div>
+            </div>
+
+            <!-- Progress Card -->
+            <div class="glass rounded-2xl shadow-xl p-6 hover-lift">
+                <h3 class="font-bold text-gray-900 mb-4">Progress</h3>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 mb-3 overflow-hidden">
+                    <div class="bg-gradient-to-r from-primary-500 to-accent-500 h-2.5 rounded-full transition-all duration-500" style="width: {% if total_tasks > 0 %}{{ completion_rate|default:0 }}{% else %}0{% endif %}%">
+                    </div>
+                </div>
+                <p class="text-sm text-gray-600 text-center">
+                    {% if total_tasks > 0 %}
+                        <span class="font-semibold text-gray-900">{{ completed_tasks|default:0 }}</span> of <span class="font-semibold text-gray-900">{{ total_tasks|default:0 }}</span> tasks completed
+                    {% else %}
+                        No tasks yet
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Quick Links Card -->
+            <div class="glass rounded-2xl shadow-xl p-6 hover-lift">
+                <h3 class="font-bold text-gray-900 mb-4">Quick Links</h3>
+                <div class="space-y-2">
+                    <a href="#" class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-primary-50 text-gray-900 hover:text-primary-600 transition-all group">
+                        <span class="text-lg group-hover:scale-125 transition-transform">📊</span>
+                        <span class="font-medium">All Tasks</span>
+                    </a>
+                    <a href="{% url 'user:user-profile' %}" class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-primary-50 text-gray-900 hover:text-primary-600 transition-all group">
+                        <span class="text-lg group-hover:scale-125 transition-transform">👤</span>
+                        <span class="font-medium">Profile</span>
+                    </a>
+                    <a href="{% url 'user:user-logout' %}" class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-red-50 text-gray-900 hover:text-red-600 transition-all group">
+                        <span class="text-lg group-hover:scale-125 transition-transform">🚪</span>
+                        <span class="font-medium">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

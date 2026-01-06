@@ -9,6 +9,8 @@ urlpatterns = [
     path('login/', views.login, name='user-login'),
     path('logout/', views.logout, name='user-logout'),
     path('profile/', views.profile, name='user-profile'),
+    path('dashboard/', views.dashboard, name='user-dashboard'),
+    path('change-password/', views.change_password, name='change-password'),
     path('forgot-password/', views.forgot_password, name='forgot-password'),
     
     # Admin routes
