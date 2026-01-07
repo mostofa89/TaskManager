@@ -9,6 +9,9 @@ from django.http import HttpResponseForbidden
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import PasswordResetCode
+from tasks.models import Task
+from datetime import datetime, timedelta
+    
 
 # Create your views here.
 def register(request):
@@ -153,8 +156,30 @@ def logout(request):
 
 
 @login_required(login_url='user:user-login')
+@login_required(login_url='user:user-login')
 def profile(request):
-    return render(request, 'user/profile.html')
+    # Get user's tasks
+    user_tasks = Task.objects.filter(user=request.user)
+    
+    # Calculate stats
+    task_count = user_tasks.count()
+    completed_count = user_tasks.filter(is_completed=True).count()
+    
+    # Get upcoming tasks (due within next 7 days)
+    today = datetime.now().date()
+    upcoming_count = user_tasks.filter(
+        due_date__gte=today,
+        due_date__lte=today + timedelta(days=7),
+        is_completed=False
+    ).count()
+    
+    context = {
+        'task_count': task_count,
+        'completed_count': completed_count,
+        'upcoming_count': upcoming_count,
+    }
+    
+    return render(request, 'user/profile.html', context)
 
 
 @login_required(login_url='user:user-login')
