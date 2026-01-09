@@ -500,8 +500,55 @@ Task Manager Team
     return render(request, 'user/forget_password.html', {'step': 'email'})
 
 
+@login_required(login_url='user:user-login')
 def dashboard(request):
-    return render(request, 'user/dashboard.html')
+    """Dashboard view with task statistics and filtering."""
+    from tasks.models import Task
+    from django.db.models import Q
+    from django.utils import timezone
+    
+    # Get filter parameter
+    filter_type = request.GET.get('filter', 'all')
+    
+    # Get all tasks for the logged-in user
+    all_tasks = Task.objects.filter(user=request.user).order_by('-created_at')
+    
+    # Apply filter
+    if filter_type == 'pending':
+        tasks = all_tasks.filter(is_completed=False)
+    elif filter_type == 'completed':
+        tasks = all_tasks.filter(is_completed=True)
+    else:
+        tasks = all_tasks
+    
+    # Calculate statistics
+    total_tasks = all_tasks.count()
+    completed_tasks = all_tasks.filter(is_completed=True).count()
+    pending_tasks = all_tasks.filter(is_completed=False).count()
+    
+    # Count overdue tasks (due_date < today and not completed)
+    today = timezone.now().date()
+    overdue_tasks = all_tasks.filter(
+        due_date__lt=today,
+        is_completed=False
+    ).count()
+    
+    # Calculate completion rate
+    completion_rate = 0
+    if total_tasks > 0:
+        completion_rate = round((completed_tasks / total_tasks) * 100)
+    
+    context = {
+        'tasks': tasks[:10],  # Limit to 10 most recent tasks
+        'total_tasks': total_tasks,
+        'completed_tasks': completed_tasks,
+        'pending_tasks': pending_tasks,
+        'overdue_tasks': overdue_tasks,
+        'completion_rate': completion_rate,
+        'filter': filter_type,
+    }
+    
+    return render(request, 'user/dashboard.html', context)
 
 
 @login_required(login_url='user:user-login')
