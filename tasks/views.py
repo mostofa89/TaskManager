@@ -43,8 +43,19 @@ def createTask(request):
 @login_required(login_url='user:user-login')
 def my_tasks(request):
     user_tasks = Task.objects.filter(user=request.user).order_by('-created_at')
+    search_query = request.GET.get('search', '').strip()
+    
+    if search_query:
+        from django.db.models import Q
+        user_tasks = user_tasks.filter(
+            Q(title__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(category__icontains=search_query)
+        )
+    
     context = {
         'tasks': user_tasks,
+        'search_query': search_query,
         'completed_count': user_tasks.filter(is_completed=True).count(),
         'in_progress_count': user_tasks.filter(status='in_progress').count(),
         'todo_count': user_tasks.filter(status='todo').count(),
