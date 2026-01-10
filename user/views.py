@@ -156,7 +156,6 @@ def logout(request):
 
 
 @login_required(login_url='user:user-login')
-@login_required(login_url='user:user-login')
 def profile(request):
     # Get user's tasks
     user_tasks = Task.objects.filter(user=request.user)
@@ -552,19 +551,116 @@ def dashboard(request):
 
 
 @login_required(login_url='user:user-login')
-def change_password(request):
-    """Change password using Django's built-in PasswordChangeForm for validation."""
-    if request.method == 'POST':
-        form = PasswordChangeForm(user=request.user, data=request.POST)
-        if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)  # keep user logged in after password change
-            message.success(request, "Password changed successfully.")
-            return redirect('user:user-profile')
-        else:
-            # Form errors will be rendered in the template
-            message.error(request, "Please correct the errors below.")
-    else:
-        form = PasswordChangeForm(user=request.user)
+def settings(request):
+    """Comprehensive settings page for profile, password, and account management."""
+    user = request.user
+    
+    # Get user's task statistics
+    from tasks.models import Task
+    user_tasks = Task.objects.filter(user=user)
+    total_tasks = user_tasks.count()
+    completed_tasks = user_tasks.filter(is_completed=True).count()
+    
+    context = {
+        'user': user,
+        'total_tasks': total_tasks,
+        'completed_tasks': completed_tasks,
+    }
+    
+    return render(request, 'user/settings.html', context)
 
-    return render(request, 'user/change_password.html', {'form': form})
+
+@login_required(login_url='user:user-login')
+def update_profile(request):
+    """Update user profile information."""
+    if request.method == 'POST':
+        user = request.user
+        
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        email = request.POST.get('email', '').strip()
+        username = request.POST.get('username', '').strip()
+        
+        # Validate username uniqueness
+        if User.objects.filter(username=username).exclude(id=user.id).exists():
+            message.error(request, "Username already taken.")
+            return redirect('user:settings')
+        
+        # Validate email uniqueness
+        if User.objects.filter(email=email).exclude(id=user.id).exists():
+            message.error(request, "Email already registered.")
+            return redirect('user:settings')
+        
+        # Update user
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.username = username
+        user.save()
+        
+        message.success(request, "Profile updated successfully.")
+        return redirect('user:settings')
+    
+    return redirect('user:settings')
+
+
+@login_required(login_url='user:user-login')
+def update_password_settings(request):
+    """Update password - handles both settings page and standalone change password page."""
+    # Determine redirect location based on referrer
+    redirect_to = request.GET.get('next', 'user:settings')
+    
+    if request.method == 'POST':
+        old_password = request.POST.get('old_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        
+        # Check if old password is correct
+        if not request.user.check_password(old_password):
+            message.error(request, "Current password is incorrect.")
+            return redirect(redirect_to)
+        
+        # Check if new passwords match
+        if new_password != confirm_password:
+            message.error(request, "New passwords do not match.")
+            return redirect(redirect_to)
+        
+        # Check password length
+        if len(new_password) < 8:
+            message.error(request, "Password must be at least 8 characters long.")
+            return redirect(redirect_to)
+        
+        # Update password
+        request.user.set_password(new_password)
+        request.user.save()
+        
+        # Keep user logged in
+        update_session_auth_hash(request, request.user)
+        
+        message.success(request, "Password updated successfully.")
+        return redirect(redirect_to)
+    
+    # For GET request to standalone page
+    return render(request, 'user/change_password.html')
+
+
+@login_required(login_url='user:user-login')
+def delete_account(request):
+    """Delete user account and all associated data."""
+    if request.method == 'POST':
+        password = request.POST.get('password')
+        
+        # Verify password
+        if not request.user.check_password(password):
+            message.error(request, "Incorrect password. Account not deleted.")
+            return redirect('user:settings')
+        
+        # Delete user (this will cascade delete all related tasks)
+        user = request.user
+        auth_logout(request)
+        user.delete()
+        
+        message.success(request, "Your account has been deleted successfully.")
+        return redirect('home')
+    
+    return redirect('user:settings')
